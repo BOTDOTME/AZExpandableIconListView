@@ -52,6 +52,7 @@ open class AZExpandableIconListView: UIView {
         super.init(frame: frame)
         
         let onTapView = UITapGestureRecognizer(target: self, action: #selector(AZExpandableIconListView.onViewTapped))
+        onTapView.numberOfTapsRequired = 2
         scrollView.addGestureRecognizer(onTapView)
         
         for image in images {
@@ -98,47 +99,137 @@ open class AZExpandableIconListView: UIView {
     fileprivate func setupInitialLayout() {
         
         var layoutConstraints:[NSLayoutConstraint] = []
+//        let middleItem: UIImageView? = icons.count % 2 != 0 ? icons[((icons.count - 1)/2)] : nil
         
-        for i in 0 ..< icons.count  {
-            let currentView = icons[i]
+        // If it's an odd # of icons (there is a clear middle item)
+        if let middleIndex = icons.count % 2 != 0 ? (icons.count - 1)/2 : nil {
             
-            //UIImage's constraint to vertically centered to containing scrollview
-            layoutConstraints.append(NSLayoutConstraint(item: currentView, attribute: NSLayoutAttribute.centerY, relatedBy: .equal, toItem: scrollView, attribute: .centerY, multiplier: 1, constant: 0))
-            
-            //UIImage's constraint for setting the width/height to be 80% of containing scrollview's height
-            layoutConstraints.append(NSLayoutConstraint(item: currentView, attribute: .width, relatedBy: .equal, toItem: scrollView, attribute: .height, multiplier: 0.8, constant: 0))
-            layoutConstraints.append(NSLayoutConstraint(item: currentView, attribute: .height, relatedBy: .equal, toItem: scrollView, attribute: .height, multiplier: 0.8, constant: 0))
-            
-            if i == 0 {
-                let marginLeftConstraint = NSLayoutConstraint(item: currentView,
-                    attribute: NSLayoutAttribute.left,
-                    relatedBy: .equal,
-                    toItem: scrollView,
-                    attribute: NSLayoutAttribute.left,
-                    multiplier: 1, constant: 0)
+            for index in middleIndex ..< icons.count - 1 {
                 
-                layoutConstraints.append(marginLeftConstraint)
+                let currentView = icons[index]
                 
-            } else {
-                let previousView = icons[i-1]
-                itemSpacingConstraints.append(NSLayoutConstraint(item: currentView,
-                    attribute: .left,
-                    relatedBy: .equal ,
-                    toItem: previousView,
-                    attribute: .centerX,
-                    multiplier: 1,
-                    constant: 1))
+                // Center vertically to containing scrollView
+                layoutConstraints.append(NSLayoutConstraint(item: currentView, attribute: NSLayoutAttribute.centerY, relatedBy: .equal, toItem: scrollView, attribute: .centerY, multiplier: 1, constant: 0))
+                
+                // Set width & height to 80% of the scrollView's height
+                layoutConstraints.append(NSLayoutConstraint(item: currentView, attribute: .width, relatedBy: .equal, toItem: scrollView, attribute: .height, multiplier: 0.8, constant: 0))
+                layoutConstraints.append(NSLayoutConstraint(item: currentView, attribute: .height, relatedBy: .equal, toItem: scrollView, attribute: .height, multiplier: 0.8, constant: 0))
+                
+                // If this is the middle item
+                if (index == middleIndex) {
+                    let centerItemXConstraint = NSLayoutConstraint(item: currentView,
+                            attribute: NSLayoutAttribute.centerX,
+                            relatedBy: .equal,
+                            toItem: scrollView,
+                            attribute: NSLayoutAttribute.centerX,
+                            multiplier: 1,
+                            constant: 0)
+                    
+                    layoutConstraints.append(centerItemXConstraint)
+                }
+                    
+                // Proceed to do layout for next left + right items
+                else {
+                    let distanceFromCenter = index - middleIndex
+                    let leftView = icons[middleIndex - distanceFromCenter]
+                    
+                    let previousLeftView = icons[(middleIndex - distanceFromCenter) + 1]
+                    let previousRightView = icons[index-1]
+                    
+//                    let leftViewRightMarginConstraint = NSLayoutConstraint(item: leftView,
+//                            attribute: .right,
+//                            relatedBy: .equal,
+//                            toItem: previousLeftView,
+//                            attribute: .centerX,
+//                            multiplier: 1,
+//                            constant: 1)
+//                    
+//                    let rightViewLeftMarginConstraint = NSLayoutConstraint(item: currentView,
+//                            attribute: .left,
+//                            relatedBy: .equal,
+//                            toItem: previousRightView,
+//                            attribute: .centerX,
+//                            multiplier: 1,
+//                            constant: 1)
+                    
+//                    self.itemSpacingConstraints.append(leftViewRightMarginConstraint)
+//                    self.itemSpacingConstraints.append(rightViewLeftMarginConstraint)
+                    
+                    let leftViewXConstraint = NSLayoutConstraint(item: leftView,
+                            attribute: .right,
+                            relatedBy: .equal,
+                            toItem: previousLeftView,
+                            attribute: .centerX,
+                            multiplier: 1,
+                            constant: 1)
+                    
+                    let rightViewXConstraint = NSLayoutConstraint(item: currentView,
+                            attribute: .left,
+                            relatedBy: .equal,
+                            toItem: previousRightView,
+                            attribute: .centerX,
+                            multiplier: 1,
+                            constant: 1)
+                    
+                    self.itemSpacingConstraints.append(leftViewXConstraint)
+                    self.itemSpacingConstraints.append(rightViewXConstraint)
+                }
             }
+            
+            layoutConstraints.append(contentsOf: self.itemSpacingConstraints)
+            scrollView.addConstraints(layoutConstraints)
+            
+            addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[container]|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: ["container":scrollView]))
+            addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[container]|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: ["container":scrollView]))
+            isSetupFinished = true
         }
+//        else {
+//            
+//        }
+    
         
-        layoutConstraints.append(contentsOf: itemSpacingConstraints)
-        scrollView.addConstraints(layoutConstraints)
-        
-        addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[container]|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: ["container":scrollView]))
-        
-        addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[container]|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: ["container":scrollView]))
-        
-        isSetupFinished = true
+//        for i in 0 ..< icons.count  {
+//            let currentView = icons[i]
+//            
+//            // UIImage's constraint to vertically centered to containing scrollview
+//            layoutConstraints.append(NSLayoutConstraint(item: currentView, attribute: NSLayoutAttribute.centerY, relatedBy: .equal, toItem: scrollView, attribute: .centerY, multiplier: 1, constant: 0))
+//            
+//            // UIImage's constraint for setting the width/height to be 80% of containing scrollview's height
+//            layoutConstraints.append(NSLayoutConstraint(item: currentView, attribute: .width, relatedBy: .equal, toItem: scrollView, attribute: .height, multiplier: 0.8, constant: 0))
+//            layoutConstraints.append(NSLayoutConstraint(item: currentView, attribute: .height, relatedBy: .equal, toItem: scrollView, attribute: .height, multiplier: 0.8, constant: 0))
+//            
+//            // x axis constraints
+//            
+//            if i == 0 {
+//                let marginLeftConstraint = NSLayoutConstraint(item: currentView,
+//                    attribute: NSLayoutAttribute.left,
+//                    relatedBy: .equal,
+//                    toItem: scrollView,
+//                    attribute: NSLayoutAttribute.left,
+//                    multiplier: 1, constant: 0)
+//                
+//                layoutConstraints.append(marginLeftConstraint)
+//                
+//            } else {
+//                let previousView = icons[i-1]
+//                itemSpacingConstraints.append(NSLayoutConstraint(item: currentView,
+//                    attribute: .left,
+//                    relatedBy: .equal ,
+//                    toItem: previousView,
+//                    attribute: .centerX,
+//                    multiplier: 1,
+//                    constant: 1))
+//            }
+//        }
+//        
+//        layoutConstraints.append(contentsOf: itemSpacingConstraints)
+//        scrollView.addConstraints(layoutConstraints)
+//        
+//        addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[container]|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: ["container":scrollView]))
+//        
+//        addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[container]|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: ["container":scrollView]))
+//        
+//        isSetupFinished = true
         
     }
     
