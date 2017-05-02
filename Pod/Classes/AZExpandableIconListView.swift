@@ -224,12 +224,12 @@ open class AZExpandableIconListView: UIView {
         borderLayer.backgroundColor = UIColor.clear.cgColor
         borderLayer.frame = borderFrame
         borderLayer.cornerRadius = newframe.width * 0.5
-        borderLayer.borderWidth = 4.0
-        borderLayer.borderColor = UIColor.white.cgColor
-        borderLayer.masksToBounds = true
+        borderLayer.borderWidth = 2.0
+        borderLayer.borderColor = UIColor.clear.cgColor
+        borderLayer.masksToBounds = false
         
         imageView.layer.addSublayer(borderLayer)
-        imageView.clipsToBounds = true
+        imageView.clipsToBounds = false
         imageView.layer.cornerRadius = newframe.width * 0.5
         
         return imageView
