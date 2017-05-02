@@ -46,7 +46,7 @@ open class AZExpandableIconListView: UIView {
      - returns: an AZExpandableIconListView
      */
     public init(frame: CGRect, images:[UIImage]) {
-        
+
         scrollView = UIScrollView(frame: frame)
         scrollView.isScrollEnabled = true
         scrollView.showsHorizontalScrollIndicator = false
@@ -163,7 +163,7 @@ open class AZExpandableIconListView: UIView {
         addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[container]|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: ["container":scrollView]))
         isSetupFinished = true
     }
-    
+
     /**
      Update the contraints of image spacing based on whether the images are expanded or not.
      Update content size of the containing UIScrollView.
@@ -196,9 +196,11 @@ open class AZExpandableIconListView: UIView {
         if isExpanded {
             let width = stretchedImageWidth
             scrollView.contentSize = CGSize(width: width, height: self.frame.height)
+            scrollView.contentInset = UIEdgeInsets(top: 0.0, left: 150, bottom: 0.0, right: 0.0)
         } else {
             let width = CGFloat(icons.count) * halfImageWidth
             scrollView.contentSize = CGSize(width: width, height: self.frame.height)
+            scrollView.contentInset = UIEdgeInsets(top: 0.0, left: 0.0, bottom: 0.0, right: 0.0)
         }
     }
     

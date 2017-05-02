@@ -31,6 +31,7 @@ class ViewController: UIViewController {
         ]
         
         let expandable = AZExpandableIconListView(frame: CGRect(x: 4, y: 10, width: UIScreen.main.bounds.size.width - 20, height: 50), images: imageArray)
+
         expandable.onExpanded = {
             if let textLabel = self.textLabel {
                 textLabel.text = "Expanded"
