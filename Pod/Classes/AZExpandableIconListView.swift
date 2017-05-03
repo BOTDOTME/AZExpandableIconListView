@@ -188,11 +188,6 @@ open class AZExpandableIconListView: UIView {
                 let label = icon.0
                 let image = icon.1
 
-                label.font = UIFont(name: "Sofia Pro", size: 10.5)
-                label.shadowOffset = CGSize(width: 0, height: 2)
-                label.shadowColor = UIColor.black
-                label.numberOfLines = 1
-
                 image.addSubview(label)
 
                 layoutConstraints.append(NSLayoutConstraint(item: label, attribute: NSLayoutAttribute.centerX, relatedBy: .equal, toItem: image, attribute: .centerX, multiplier: 1, constant: 0))
