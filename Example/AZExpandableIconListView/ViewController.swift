@@ -30,20 +30,20 @@ class ViewController: UIViewController {
             UIImage(named: "icon_3.jpg")!
         ]
         
-        let expandable = AZExpandableIconListView(frame: CGRect(x: 4, y: 10, width: UIScreen.main.bounds.size.width - 20, height: 50), images: imageArray)
-
-        expandable.onExpanded = {
-            if let textLabel = self.textLabel {
-                textLabel.text = "Expanded"
-            }
-        }
-        
-        expandable.onCollapsed = {
-            if let textLabel = self.textLabel {
-                textLabel.text = "Collapsed"
-            }
-        }
-        self.view.addSubview(expandable)
+//        let expandable = AZExpandableIconListView(frame: CGRect(x: 4, y: 10, width: UIScreen.main.bounds.size.width - 20, height: 50), images: imageArray)
+//
+//        expandable.onExpanded = {
+//            if let textLabel = self.textLabel {
+//                textLabel.text = "Expanded"
+//            }
+//        }
+//        
+//        expandable.onCollapsed = {
+//            if let textLabel = self.textLabel {
+//                textLabel.text = "Collapsed"
+//            }
+//        }
+//        self.view.addSubview(expandable)
         
         let label = UILabel(frame: CGRect(x: 10, y: 40, width: 200, height: 100))
         label.text = "Initial"
