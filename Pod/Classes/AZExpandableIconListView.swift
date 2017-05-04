@@ -51,15 +51,25 @@ open class AZExpandableIconListView: UIView {
         self.clipsToBounds = false
 
         let onTapView = UITapGestureRecognizer(target: self, action: #selector(AZExpandableIconListView.onViewTapped))
+        onTapView.numberOfTapsRequired = 1
         scrollView.addGestureRecognizer(onTapView)
         
+        var tag = views.count - 1
         // Reverse the array of incoming participants so that the User is the last one added (is on top)
         for (label, image) in views.reversed() {
             let newImageView = UIImageView(frame: CGRect(x: 0, y: 0, width: imageWidth*0.5, height: imageWidth*0.5))
             newImageView.image = image.image
             newImageView.translatesAutoresizingMaskIntoConstraints = false
+            newImageView.isUserInteractionEnabled = true
+            newImageView.tag = tag
+
+            let onTapIcon = UILongPressGestureRecognizer(target: self, action: #selector(AZExpandableIconListView.iconTapped(_:)))
+            onTapIcon.minimumPressDuration = 0.5
+            newImageView.addGestureRecognizer(onTapIcon)
+
             self.icons.append((label, newImageView))
             scrollView.addSubview(newImageView)
+            tag -= 1
         }
 
         // Reverse again so that constraints match in the future
@@ -72,6 +82,7 @@ open class AZExpandableIconListView: UIView {
     
     /////////////////////////////////////////////////////////////////////////////
     func onViewTapped(){
+
         updateSpacingConstraints()
         isExpanded = !isExpanded
         displayNames()
@@ -92,6 +103,15 @@ open class AZExpandableIconListView: UIView {
         })
     }
     
+    /////////////////////////////////////////////////////////////////////////////
+    func iconTapped(_ sender: Any) {
+        if let recognizer = sender as? UILongPressGestureRecognizer, let view = recognizer.view {
+            if (recognizer.state == UIGestureRecognizerState.began) {
+                print(view.tag)
+            }
+        }
+    }
+
     /////////////////////////////////////////////////////////////////////////////
     public required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
