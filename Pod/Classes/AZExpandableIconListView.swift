@@ -275,19 +275,9 @@ open class AZExpandableIconListView: UIView {
      Update the content size of the containing UIScrollView based on whether the images are expanded or not.
      */
     /////////////////////////////////////////////////////////////////////////////
-    fileprivate func updateContentSize(){
-
-        // Update for expanded content
-        if isExpanded {
-            let width = stretchedImageWidth
-            scrollView.contentSize = CGSize(width: width, height: scrollView.frame.height)
-        }
-
-        // Update for contracted content
-        else {
-            let width = CGFloat(icons.count) * halfImageWidth
-            scrollView.contentSize = CGSize(width: width, height: scrollView.frame.height)
-        }
+    fileprivate func updateContentSize() {
+        let width = isExpanded ? stretchedImageWidth : CGFloat(icons.count) * halfImageWidth
+        scrollView.contentSize = CGSize(width: width, height: scrollView.frame.height)
     }
 
     /**
