@@ -42,6 +42,7 @@ open class AZExpandableIconListView: UIView {
         
         scrollView = UIScrollView(frame: frame)
         scrollView.isScrollEnabled = true
+        scroll.bounces = false
         scrollView.showsHorizontalScrollIndicator = false
         scrollView.showsVerticalScrollIndicator = false
         scrollView.translatesAutoresizingMaskIntoConstraints = false
