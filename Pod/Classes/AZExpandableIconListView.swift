@@ -158,12 +158,12 @@ open class AZExpandableIconListView: UIView {
             layoutConstraints.append(NSLayoutConstraint(item: middleRightView, attribute: NSLayoutAttribute.centerY, relatedBy: .equal, toItem: contentView, attribute: .centerY, multiplier: 1, constant: avatarYoffset))
             layoutConstraints.append(NSLayoutConstraint(item: middleRightView, attribute: .width, relatedBy: .equal, toItem: contentView, attribute: .height, multiplier: 0.6, constant: 0))
             layoutConstraints.append(NSLayoutConstraint(item: middleRightView, attribute: .height, relatedBy: .equal, toItem: contentView, attribute: .height, multiplier: 0.6, constant: 0))
-            self.rightMiddleItemSpacingConstraint = NSLayoutConstraint(item: middleRightView, attribute: NSLayoutAttribute.centerX, relatedBy: .equal, toItem: contentView, attribute: .centerX, multiplier: 1, constant: imageWidth * 0.25)
+            self.rightMiddleItemSpacingConstraint = NSLayoutConstraint(item: middleRightView, attribute: NSLayoutAttribute.centerX, relatedBy: .equal, toItem: contentView, attribute: .centerX, multiplier: 1, constant: imageWidth / 10)
             
             layoutConstraints.append(NSLayoutConstraint(item: middleLeftView, attribute: NSLayoutAttribute.centerY, relatedBy: .equal, toItem: contentView, attribute: .centerY, multiplier: 1, constant: avatarYoffset))
             layoutConstraints.append(NSLayoutConstraint(item: middleLeftView, attribute: .width, relatedBy: .equal, toItem: contentView, attribute: .height, multiplier: 0.6, constant: 0))
             layoutConstraints.append(NSLayoutConstraint(item: middleLeftView, attribute: .height, relatedBy: .equal, toItem: contentView, attribute: .height, multiplier: 0.6, constant: 0))
-            self.leftMiddleItemSpacingConstraint = NSLayoutConstraint(item: middleLeftView, attribute: NSLayoutAttribute.centerX, relatedBy: .equal, toItem: contentView, attribute: .centerX, multiplier: 1, constant: -(imageWidth * 0.25))
+            self.leftMiddleItemSpacingConstraint = NSLayoutConstraint(item: middleLeftView, attribute: NSLayoutAttribute.centerX, relatedBy: .equal, toItem: contentView, attribute: .centerX, multiplier: 1, constant: -(imageWidth / 10))
             
             layoutConstraints.append(self.rightMiddleItemSpacingConstraint)
             layoutConstraints.append(self.leftMiddleItemSpacingConstraint)
@@ -186,8 +186,8 @@ open class AZExpandableIconListView: UIView {
             layoutConstraints.append(NSLayoutConstraint(item: leftView, attribute: .height, relatedBy: .equal, toItem: contentView, attribute: .height, multiplier: 0.6, constant: 0))
             
             // Spacing constraints
-            self.rightItemSpacingConstraints.append(NSLayoutConstraint(item: rightView, attribute: .left, relatedBy: .equal, toItem: previousRightView, attribute: .centerX, multiplier: 1, constant: 1))
-            self.leftItemSpacingConstraints.append(NSLayoutConstraint(item: leftView, attribute: .right, relatedBy: .equal, toItem: previousLeftView, attribute: .centerX, multiplier: 1, constant: 1))
+            self.rightItemSpacingConstraints.append(NSLayoutConstraint(item: rightView, attribute: .left, relatedBy: .equal, toItem: previousRightView, attribute: .right, multiplier: 1, constant: -imageWidth*0.8))
+            self.leftItemSpacingConstraints.append(NSLayoutConstraint(item: leftView, attribute: .right, relatedBy: .equal, toItem: previousLeftView, attribute: .left, multiplier: 1, constant: imageWidth*0.8))
             
             previousRightView = rightView
             previousLeftView = leftView
@@ -245,8 +245,8 @@ open class AZExpandableIconListView: UIView {
             contentView.frame = CGRect(x: scrollView.frame.origin.x, y: scrollView.frame.origin.y, width: width, height: scrollView.frame.height)
             scrollView.contentSize = CGSize(width: contentView.frame.width, height: scrollView.frame.height)
             
-            for constraint in rightItemSpacingConstraints { constraint.constant = halfImageWidth + imageSpacing }
-            for constraint in leftItemSpacingConstraints { constraint.constant = -(halfImageWidth + imageSpacing) }
+            for constraint in rightItemSpacingConstraints { constraint.constant = imageSpacing }
+            for constraint in leftItemSpacingConstraints { constraint.constant = -imageSpacing }
             
             if let midRightConstraint = self.rightMiddleItemSpacingConstraint, let midLeftConstraint = self.leftMiddleItemSpacingConstraint {
                 midRightConstraint.constant = (0.1 * imageWidth) + imageSpacing
@@ -259,15 +259,14 @@ open class AZExpandableIconListView: UIView {
             contentView.frame = CGRect(x: scrollView.frame.origin.x, y: scrollView.frame.origin.y, width: scrollView.frame.width, height: scrollView.frame.height)
             scrollView.contentSize = CGSize(width: contentView.frame.width, height: scrollView.frame.height)
             
-            for constraint in rightItemSpacingConstraints { constraint.constant = 1 }
-            for constraint in leftItemSpacingConstraints { constraint.constant = 1 }
+            for constraint in rightItemSpacingConstraints { constraint.constant = -imageWidth*0.8 }
+            for constraint in leftItemSpacingConstraints { constraint.constant = imageWidth*0.8 }
             
-            if let middleRightConstraint = self.rightMiddleItemSpacingConstraint, let middleLeftConstraint = self.leftMiddleItemSpacingConstraint {
-                middleRightConstraint.constant = imageWidth * 0.25
-                middleLeftConstraint.constant = -(imageWidth * 0.25)
+            if let midRightConstraint = self.rightMiddleItemSpacingConstraint, let midLeftConstraint = self.leftMiddleItemSpacingConstraint {
+                midRightConstraint.constant = imageWidth / 10
+                midLeftConstraint.constant = -(imageWidth / 10)
             }
         }
-        
     }
     
     /**
