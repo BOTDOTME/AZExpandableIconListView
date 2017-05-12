@@ -40,7 +40,8 @@ open class AZExpandableIconListView: UIView {
     /////////////////////////////////////////////////////////////////////////////
     public init(frame: CGRect, views: [(UILabel, UIImageView)], imageSpacing: CGFloat) {
         
-        scrollView = UIScrollView(frame: frame)
+        let bounds = CGRect(x: 0, y: 0, width: frame.width, height: frame.height)
+        scrollView = UIScrollView(frame: bounds)
         scrollView.isScrollEnabled = true
         scrollView.bounces = false
         scrollView.showsHorizontalScrollIndicator = false
@@ -48,7 +49,7 @@ open class AZExpandableIconListView: UIView {
         scrollView.translatesAutoresizingMaskIntoConstraints = false
         scrollView.clipsToBounds = true
         
-        contentView = UIView(frame: frame)
+        contentView = UIView(frame: bounds)
         
         super.init(frame: frame)
         
