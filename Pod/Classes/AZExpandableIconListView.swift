@@ -47,14 +47,13 @@ open class AZExpandableIconListView: UIView {
         scrollView.showsHorizontalScrollIndicator = false
         scrollView.showsVerticalScrollIndicator = false
         scrollView.translatesAutoresizingMaskIntoConstraints = false
-        scrollView.clipsToBounds = true
         
         contentView = UIView(frame: bounds)
         
-        super.init(frame: frame)
+        super.init(frame: bounds)
         
         self.imageSpacing = imageSpacing
-        self.clipsToBounds = false
+        self.clipsToBounds = true
         
         let onTapView = UITapGestureRecognizer(target: self, action: #selector(AZExpandableIconListView.adjustView))
         onTapView.numberOfTapsRequired = 2
@@ -63,6 +62,7 @@ open class AZExpandableIconListView: UIView {
         var tag = views.count - 1
         
         // Add the participantViews
+
         // Reverse the array of incoming participants so that the User is the last one added (is on top)
         for (label, image) in views.reversed() {
             image.frame = CGRect(x: 0, y: 0, width: imageWidth*0.5, height: imageWidth*0.5)
@@ -78,21 +78,10 @@ open class AZExpandableIconListView: UIView {
         self.addSubview(scrollView)
         scrollView.addSubview(contentView)
         
-        // constraints for scrollView -> self
-        self.addConstraint(NSLayoutConstraint(item: scrollView, attribute: NSLayoutAttribute.centerX, relatedBy: .equal, toItem: self, attribute: NSLayoutAttribute.centerX, multiplier: 1, constant: 0))
+        // constraints for scrollView and contentView
         self.addConstraint(NSLayoutConstraint(item: scrollView, attribute: NSLayoutAttribute.centerY, relatedBy: .equal, toItem: self, attribute: NSLayoutAttribute.centerY, multiplier: 1, constant: 0))
         self.addConstraint(NSLayoutConstraint(item: scrollView, attribute: .width, relatedBy: .equal, toItem: self, attribute: .width, multiplier: 1, constant: 0))
-        self.addConstraint(NSLayoutConstraint(item: scrollView, attribute: .height, relatedBy: .equal, toItem: self, attribute: .height, multiplier: 1, constant: 0))
-        
-        // constraints for contentView -> scrollView
-        scrollView.addConstraint(NSLayoutConstraint(item: contentView, attribute: NSLayoutAttribute.centerX, relatedBy: .equal, toItem: scrollView, attribute: NSLayoutAttribute.centerX, multiplier: 1, constant: 0))
         scrollView.addConstraint(NSLayoutConstraint(item: contentView, attribute: NSLayoutAttribute.centerY, relatedBy: .equal, toItem: scrollView, attribute: NSLayoutAttribute.centerY, multiplier: 1, constant: 0))
-        scrollView.addConstraint(NSLayoutConstraint(item: contentView, attribute: .width, relatedBy: .equal, toItem: scrollView, attribute: .width, multiplier: 1, constant: 0))
-        scrollView.addConstraint(NSLayoutConstraint(item: contentView, attribute: .height, relatedBy: .equal, toItem: scrollView, attribute: .height, multiplier: 1, constant: 0))
-        scrollView.addConstraint(NSLayoutConstraint(item: contentView, attribute: .top, relatedBy: .equal, toItem: scrollView, attribute: .top, multiplier: 1, constant: 0))
-        scrollView.addConstraint(NSLayoutConstraint(item: contentView, attribute: .left, relatedBy: .equal, toItem: scrollView, attribute: .left, multiplier: 1, constant: 0))
-        scrollView.addConstraint(NSLayoutConstraint(item: contentView, attribute: .bottom, relatedBy: .equal, toItem: scrollView, attribute: .bottom, multiplier: 1, constant: 0))
-        scrollView.addConstraint(NSLayoutConstraint(item: contentView, attribute: .right, relatedBy: .equal, toItem: scrollView, attribute: .right, multiplier: 1, constant: 0))
         
         updateConstraints()
         updateContentSize()
@@ -224,11 +213,8 @@ open class AZExpandableIconListView: UIView {
                 image.addConstraints(layoutConstraints)
                 layoutConstraints = []
             }
-        } else {
-            for icon in self.icons {
-                icon.0.removeFromSuperview()
-            }
         }
+        else { for icon in self.icons { icon.0.removeFromSuperview() } }
     }
     
     /**
