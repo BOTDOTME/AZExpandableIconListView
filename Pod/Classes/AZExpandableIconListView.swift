@@ -15,11 +15,13 @@ open class AZExpandableIconListView: UIView {
     fileprivate var contentView: UIView
     fileprivate var isSetupFinished: Bool = false
     open var isExpanded: Bool = false
-    fileprivate var rightMiddleItemSpacingConstraint: NSLayoutConstraint!
-    fileprivate var leftMiddleItemSpacingConstraint: NSLayoutConstraint!
+
+    fileprivate var middleItemSpacingConstraint: NSLayoutConstraint?
+    fileprivate var rightMiddleItemSpacingConstraint: NSLayoutConstraint?
+    fileprivate var leftMiddleItemSpacingConstraint: NSLayoutConstraint?
     fileprivate var rightItemSpacingConstraints: [NSLayoutConstraint] = []
     fileprivate var leftItemSpacingConstraints: [NSLayoutConstraint] = []
-    
+
     open var imageSpacing: CGFloat = 4.0
     open var onExpanded: (()->())?
     open var onCollapsed:(()->())?
@@ -50,14 +52,14 @@ open class AZExpandableIconListView: UIView {
         scrollView.showsHorizontalScrollIndicator = false
         scrollView.showsVerticalScrollIndicator = false
         scrollView.translatesAutoresizingMaskIntoConstraints = false
-        
+
         contentView = UIView(frame: bounds)
-        
+
         super.init(frame: bounds)
-        
+
         self.imageSpacing = imageSpacing
         self.clipsToBounds = true
-        
+
         let onTapView = UITapGestureRecognizer(target: self, action: #selector(AZExpandableIconListView.adjustView))
         onTapView.numberOfTapsRequired = 2
         scrollView.addGestureRecognizer(onTapView)
@@ -65,14 +67,11 @@ open class AZExpandableIconListView: UIView {
         var tag = views.count - 1
         
         // Add the participantViews
-
         // Reverse the array of incoming participants so that the User is the last one added (is on top)
         for (label, image) in views.reversed() {
             image.frame = CGRect(x: 0, y: 0, width: imageWidth*0.5, height: imageWidth*0.5)
             image.tag = tag
-
-            if tag > 9  { image.alpha = 0.0 }
-
+            if tag > 9 { image.alpha = 0.0 } // if there are more than 10 participants, make the 11th - Nth participant invisible for now
             self.icons.append((label, image))
             contentView.addSubview(image)
             tag -= 1
@@ -142,9 +141,11 @@ open class AZExpandableIconListView: UIView {
             let middleView = icons[middleIndex].1
             
             layoutConstraints.append(NSLayoutConstraint(item: middleView, attribute: NSLayoutAttribute.centerY, relatedBy: .equal, toItem: contentView, attribute: .centerY, multiplier: 1, constant: avatarYoffset))
-            layoutConstraints.append(NSLayoutConstraint(item: middleView, attribute: NSLayoutAttribute.centerX, relatedBy: .equal, toItem: contentView, attribute: .centerX, multiplier: 1, constant: needsToAdjust ? realContractedCenterOffset : 1))
             layoutConstraints.append(NSLayoutConstraint(item: middleView, attribute: .width, relatedBy: .equal, toItem: contentView, attribute: .height, multiplier: 0.6, constant: 0))
             layoutConstraints.append(NSLayoutConstraint(item: middleView, attribute: .height, relatedBy: .equal, toItem: contentView, attribute: .height, multiplier: 0.6, constant: 0))
+
+            self.middleItemSpacingConstraint = NSLayoutConstraint(item: middleView, attribute: NSLayoutAttribute.centerX, relatedBy: .equal, toItem: contentView, attribute: .centerX, multiplier: 1, constant: needsToAdjust ? realContractedCenterOffset : 1)
+            layoutConstraints.append(self.middleItemSpacingConstraint!)
         }
             
         else {
@@ -160,9 +161,9 @@ open class AZExpandableIconListView: UIView {
             layoutConstraints.append(NSLayoutConstraint(item: middleLeftView, attribute: .width, relatedBy: .equal, toItem: contentView, attribute: .height, multiplier: 0.6, constant: 0))
             layoutConstraints.append(NSLayoutConstraint(item: middleLeftView, attribute: .height, relatedBy: .equal, toItem: contentView, attribute: .height, multiplier: 0.6, constant: 0))
             self.leftMiddleItemSpacingConstraint = NSLayoutConstraint(item: middleLeftView, attribute: NSLayoutAttribute.centerX, relatedBy: .equal, toItem: contentView, attribute: .centerX, multiplier: 1, constant: needsToAdjust ? realContractedCenterOffset - (imageWidth / 10) : -(imageWidth / 10))
-            
-            layoutConstraints.append(self.rightMiddleItemSpacingConstraint)
-            layoutConstraints.append(self.leftMiddleItemSpacingConstraint)
+
+            layoutConstraints.append(self.rightMiddleItemSpacingConstraint!)
+            layoutConstraints.append(self.leftMiddleItemSpacingConstraint!)
         }
         
         // Add constraints iteratively for the non-middle Avatars
@@ -237,7 +238,11 @@ open class AZExpandableIconListView: UIView {
             
             contentView.frame = CGRect(x: scrollView.frame.origin.x, y: scrollView.frame.origin.y, width: width, height: scrollView.frame.height)
             scrollView.contentSize = CGSize(width: contentView.frame.width, height: scrollView.frame.height)
-            
+
+            if let midConstraint = self.middleItemSpacingConstraint {
+                if needsToAdjust { midConstraint.constant = 1 }
+            }
+
             for constraint in rightItemSpacingConstraints { constraint.constant = imageSpacing }
             for constraint in leftItemSpacingConstraints { constraint.constant = -imageSpacing }
             
@@ -251,7 +256,11 @@ open class AZExpandableIconListView: UIView {
         else {
             contentView.frame = CGRect(x: scrollView.frame.origin.x, y: scrollView.frame.origin.y, width: scrollView.frame.width, height: scrollView.frame.height)
             scrollView.contentSize = CGSize(width: contentView.frame.width, height: scrollView.frame.height)
-            
+
+            if let midConstraint = self.middleItemSpacingConstraint {
+                if needsToAdjust { midConstraint.constant = realContractedCenterOffset }
+            }
+
             for constraint in rightItemSpacingConstraints { constraint.constant = -imageWidth*0.8 }
             for constraint in leftItemSpacingConstraints { constraint.constant = imageWidth*0.8 }
             
@@ -261,6 +270,7 @@ open class AZExpandableIconListView: UIView {
             }
         }
 
+        // Make participants visible / invisible appropriately
         for (_, image) in self.icons { if image.tag > 9 { image.alpha = isExpanded ? 0.0 : 1.0 } }
     }
     
